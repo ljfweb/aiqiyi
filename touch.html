@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	</head>
+	<style type="text/css">
+		*{margin: 0; padding: 0;}
+		#myVideo{
+			width: 100%;
+			height: 400px;
+			
+		}
+	</style>
+	<body>
+		<video controls id="myVideo" src="videos.mp4"></video>
+	</body>
+	<script type="text/javascript">
+		
+		window.onload=function(){
+			var myVideo=document.getElementById("myVideo");
+			
+			myVideo.addEventListener("touchstart",start,true);
+			
+			myVideo.addEventListener("touchmove",move,true);
+			
+			myVideo.addEventListener("touchend",end,true);
+			
+			var startx;
+			var starty;
+			var endx;
+			var endy;
+			var movex;
+			var movey;
+			function start(e){
+//				e.touches  手指列表
+				console.log(e.touches)
+				startx=e.touches[0].pageX;
+				starty=e.touches[0].pageY;
+			
+			}
+			function move(e){
+				movex=e.touches[0].pageX;
+				movey=e.touches[0].pageY;
+
+			}
+			
+			function end(e){
+				console.log(e)
+//				e.changedTouches --发生改变的手指列表
+			
+				endx=e.changedTouches[0].pageX;
+				endy=e.changedTouches[0].pageY;
+				
+				var disx=endx-startx;//快进快退
+				var disy=endy-starty;//声音加减
+				//获取视频总时长 算出滑动比例
+				var time=myVideo.duration;//视频总时长
+				var dw=myVideo.clientWidth;
+				var dh=myVideo.clientHeight;
+				var bl= Math.abs(time*(disx/dw));//视频快进快退的距离
+				var vl=	Math.abs(1*(disy/dh));//音量计算
+				console.log(vl)
+			if(Math.abs(disx)>Math.abs(disy)){
+				if(disx>0){
+					//快进
+					//获取当前播放位置
+					var vtime=myVideo.currentTime;
+					myVideo.currentTime=vtime+bl;
+				}
+				if(disx<0){
+					//快退
+					var vtime=myVideo.currentTime;
+					myVideo.currentTime=vtime-bl;
+					
+				}
+			}else{
+				if(disy<0){
+					//增加音量
+					var volume=myVideo.volume;//当前音量  0.8
+					if(volume+vl>1){
+						myVideo.volume=1;
+					}else{
+						myVideo.volume=volume+vl;  
+					}
+				}
+				if(disy>0){
+					//声音减小
+					var volume=myVideo.volume;//当前音量
+					if(volume-vl<0){
+						myVideo.volume=0;
+					}else{
+						myVideo.volume=volume-vl;
+					}
+				}
+			  }					
+			}
+	
+		}
+		
+		
+		
+		
+	</script>
+</html>
